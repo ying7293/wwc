@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>今日任务 · 随身PDA扫码</title>
+    <style>
+        /* 全局基础重置，充满能量感 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(145deg, #0b1a2e 0%, #1b2f44 100%);
+            /* 深色渐变背景，突出荧光文字 */
+            font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', 'Helvetica Neue', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* 主容器：完全居中，并且可以包含动态光效 */
+        .reminder-box {
+            max-width: 900px;
+            width: 100%;
+            background: rgba(10, 25, 40, 0.65);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 2px solid rgba(255, 220, 100, 0.4);
+            border-radius: 4rem 2rem 4rem 2rem;
+            /* 不规则圆角增加个性 */
+            box-shadow: 0 30px 50px rgba(0, 0, 0, 0.7),
+                        0 0 0 2px rgba(255, 215, 0, 0.2) inset,
+                        0 0 40px rgba(255, 200, 50, 0.4);
+            padding: 2.8rem 2.2rem;
+            transition: box-shadow 0.3s ease;
+            animation: borderGlow 3s infinite alternate;
+        }
+
+        /* 边框呼吸光效 */
+        @keyframes borderGlow {
+            0% {
+                box-shadow: 0 30px 50px rgba(0, 0, 0, 0.7),
+                            0 0 0 2px rgba(255, 215, 0, 0.3) inset,
+                            0 0 30px rgba(255, 180, 40, 0.5);
+                border-color: rgba(255, 200, 80, 0.5);
+            }
+            100% {
+                box-shadow: 0 30px 70px rgba(0, 0, 0, 0.9),
+                            0 0 0 4px rgba(255, 240, 120, 0.7) inset,
+                            0 0 70px rgba(255, 220, 0, 0.9);
+                border-color: rgba(255, 236, 130, 0.9);
+            }
+        }
+
+        /* 文字主视觉：巨大、有力、完全动态 */
+        .dynamic-message {
+            text-align: center;
+            font-size: clamp(2.8rem, 15vw, 5.8rem);
+            font-weight: 900;
+            line-height: 1.3;
+            letter-spacing: 0.02em;
+            word-break: break-word;
+            text-transform: uppercase;
+            /* 叠加多层动态效果 */
+            animation: flicker 2.2s infinite, float 4s ease-in-out infinite, huePulse 6s infinite alternate;
+            transform-origin: center;
+            /* 文字主体颜色 —— 强烈荧光橙/黄 */
+            color: #ffe484;
+            text-shadow: 0 0 10px #ffb347,
+                         0 0 20px #ffa824,
+                         0 0 40px #f90,
+                         0 0 80px #ff6a00,
+                         4px 4px 0 rgba(0, 10, 20, 0.8);
+            -webkit-text-stroke: 2px rgba(255, 200, 0, 0.3);
+            /* 轻微的倾斜增加动感 */
+            transform: perspective(500px) rotateX(1deg) rotateY(0.5deg);
+        }
+
+        /* 闪烁 + 亮度变化 */
+        @keyframes flicker {
+            0%, 9%, 11%, 60%, 62%, 100% {
+                opacity: 1;
+                filter: brightness(1) contrast(1.2);
+                text-shadow: 0 0 10px #ffb347,
+                             0 0 25px #ffa824,
+                             0 0 50px #f90,
+                             0 0 100px #ff6a00,
+                             4px 4px 0 #001122;
+            }
+            10%, 61% {
+                opacity: 0.7;
+                filter: brightness(1.6) contrast(1.5);
+                text-shadow: 0 0 20px #ffdb7c,
+                             0 0 40px #ffbb33,
+                             0 0 80px #ff8800,
+                             0 0 120px #ff3300,
+                             4px 4px 0 #001122;
+            }
+            90% {
+                opacity: 0.95;
+                filter: brightness(1.2) contrast(1.1);
+            }
+        }
+
+        /* 上下漂浮，配合透视 */
+        @keyframes float {
+            0% {
+                transform: perspective(500px) rotateX(1deg) rotateY(0.5deg) translateY(0px);
+            }
+            50% {
+                transform: perspective(500px) rotateX(0.5deg) rotateY(-0.2deg) translateY(-12px) scale(1.02);
+            }
+            100% {
+                transform: perspective(500px) rotateX(1deg) rotateY(0.5deg) translateY(0px);
+            }
+        }
+
+        /* 色相脉冲：在暖色范围内细微渐变 */
+        @keyframes huePulse {
+            0% {
+                color: #ffe484;
+            }
+            50% {
+                color: #ffc164;
+            }
+            100% {
+                color: #ffdb8a;
+            }
+        }
+
+        /* 下方装饰性副文案 — 修改为 随身携带PDA 扫码立刻行动 */
+        .sub-dynamic {
+            margin-top: 2.5rem;
+            text-align: center;
+            font-size: 1.9rem;
+            font-weight: 700;
+            color: rgba(255, 255, 210, 1);
+            letter-spacing: 0.2rem;
+            text-shadow: 0 0 12px #ffaa00, 0 0 25px #ff8800, 0 0 40px #ff5500;
+            animation: subFlicker 3s infinite alternate;
+            background: rgba(0, 20, 40, 0.7);
+            display: inline-block;
+            padding: 1rem 3rem;
+            margin-left: auto;
+            margin-right: auto;
+            border-radius: 60px;
+            backdrop-filter: blur(4px);
+            border: 2px solid rgba(255, 200, 0, 0.8);
+            box-shadow: 0 0 40px rgba(255, 180, 0, 0.7);
+            font-style: normal;
+            text-transform: uppercase;
+            word-break: keep-all;
+            white-space: nowrap; /* 确保不换行，适应大屏幕 */
+        }
+
+        @keyframes subFlicker {
+            0% { opacity: 0.9; text-shadow: 0 0 10px #ffaa33, 0 0 20px #ff8800; }
+            100% { opacity: 1; text-shadow: 0 0 20px #ffdb58, 0 0 40px #ffaa00, 0 0 60px #ff7700; }
+        }
+
+        /* 背景动态粒子点缀 (使用伪元素+动画) */
+        body::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 30% 40%, rgba(255, 215, 0, 0.15) 0%, transparent 25%),
+                        radial-gradient(circle at 80% 70%, rgba(255, 140, 0, 0.2) 0%, transparent 30%),
+                        repeating-linear-gradient(45deg, rgba(255, 200, 0, 0.02) 0px, rgba(255, 200, 0, 0.02) 20px, transparent 20px, transparent 40px);
+            pointer-events: none;
+            z-index: 0;
+            animation: bgShift 16s linear infinite alternate;
+        }
+
+        @keyframes bgShift {
+            0% { background-position: 0% 0%; }
+            100% { background-position: 5% 8%; }
+        }
+
+        /* 确保reminder-box在背景之上 */
+        .reminder-box {
+            position: relative;
+            z-index: 2;
+        }
+
+        /* 额外加强的闪烁动态：小光点绕着边框 */
+        .reminder-box::after {
+            content: '';
+            position: absolute;
+            top: -6px; left: -6px; right: -6px; bottom: -6px;
+            border-radius: inherit;
+            background: radial-gradient(circle at 20% 30%, rgba(255, 230, 100, 0.4) 0%, transparent 40%),
+                        radial-gradient(circle at 90% 70%, rgba(255, 200, 0, 0.5) 0%, transparent 45%);
+            filter: blur(12px);
+            opacity: 0.7;
+            z-index: -1;
+            animation: auraMove 7s infinite alternate;
+        }
+
+        @keyframes auraMove {
+            0% { background-position: 0% 20%; }
+            100% { background-position: 100% 80%; }
+        }
+
+        /* 移动端适配：让文字稍微小一丢丢，依然醒目 */
+        @media (max-width: 650px) {
+            .dynamic-message {
+                font-size: clamp(2.4rem, 12vw, 4rem);
+                -webkit-text-stroke: 1px rgba(255, 200, 0, 0.4);
+            }
+            .sub-dynamic {
+                font-size: 1.4rem;
+                padding: 0.7rem 1.5rem;
+                letter-spacing: 0.1rem;
+                white-space: normal; /* 小屏允许换行 */
+                word-break: break-word;
+            }
+            .reminder-box {
+                padding: 1.8rem 1.2rem;
+                border-radius: 3rem 1.5rem 3rem 1.5rem;
+            }
+        }
+
+        /* 跳动的下划线强化未完成感 */
+        .underline-dynamic {
+            width: 80%;
+            margin: 1rem auto 0;
+            height: 6px;
+            background: linear-gradient(90deg, transparent, #ffc107, #ff8c00, #ffc107, transparent);
+            border-radius: 6px;
+            animation: stretch 2.2s infinite, glowLine 1.8s infinite alternate;
+            box-shadow: 0 0 20px #ffb347;
+        }
+
+        @keyframes stretch {
+            0% { width: 60%; opacity: 0.7; }
+            50% { width: 90%; opacity: 1; }
+            100% { width: 60%; opacity: 0.7; }
+        }
+
+        @keyframes glowLine {
+            from { filter: brightness(0.8); height: 6px; }
+            to { filter: brightness(1.5); height: 10px; background: linear-gradient(90deg, transparent, #ffdb7c, #ffb800, #ffdb7c, transparent); }
+        }
+
+        /* 为了更加醒目，在文字两侧添加闪烁的符号（纯装饰） */
+        .embellish {
+            display: inline-block;
+            font-size: 0.8em;
+            animation: spinPulse 3s infinite;
+            filter: drop-shadow(0 0 8px gold);
+            margin: 0 0.15em;
+        }
+
+        .embellish.left {
+            transform: rotate(-5deg);
+        }
+        .embellish.right {
+            transform: rotate(5deg);
+        }
+
+        @keyframes spinPulse {
+            0% { opacity: 0.9; transform: scale(1) rotate(-2deg); }
+            50% { opacity: 1; transform: scale(1.2) rotate(2deg); text-shadow: 0 0 20px orange; }
+            100% { opacity: 0.9; transform: scale(1) rotate(-2deg); }
+        }
+
+        /* 调整文字容器，让装饰符与文字和谐 */
+        .message-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+    </style>
+</head>
+<body>
+    <div class="reminder-box">
+        <!-- 第一行：今天虽然很忙， 保留原样 -->
+        <div class="message-wrapper">
+            <span class="embellish left">⚠️</span>
+            <span class="dynamic-message">今天虽然很忙，</span>
+            <span class="embellish right">❗</span>
+        </div>
+        
+        <!-- 第二行：但是任务未完成， (已精简) -->
+        <div class="message-wrapper" style="margin-top: -0.3rem;">
+            <span class="embellish left">⚡</span>
+            <span class="dynamic-message">但是任务未完成，</span>
+            <span class="embellish right">⚡</span>
+        </div>
+        
+        <!-- 第三行：请继续加油 保持不变 -->
+        <div class="message-wrapper">
+            <span class="embellish left">🔥</span>
+            <span class="dynamic-message">请继续加油</span>
+            <span class="embellish right">🔥</span>
+        </div>
+
+        <!-- 跳动的下划线 -->
+        <div class="underline-dynamic"></div>
+
+        <!-- 下方辅助动态文字 — 已修改为“随身携带PDA 扫码立刻行动” -->
+        <div class="sub-dynamic">
+            📱 随身携带PDA 扫码立刻行动 📱
+        </div>
+    </div>
+
+    <!-- 额外的动态小元素：散落的浮动光点 -->
+    <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 3; overflow: hidden;">
+        <div style="position: absolute; top: 15%; left: 10%; width: 20px; height: 20px; background: rgba(255,215,0,0.25); border-radius: 50%; filter: blur(10px); animation: flyDot 12s infinite alternate;"></div>
+        <div style="position: absolute; bottom: 20%; right: 5%; width: 40px; height: 40px; background: #ffa50030; border-radius: 50%; filter: blur(16px); animation: flyDot 19s infinite reverse;"></div>
+        <div style="position: absolute; top: 70%; left: 20%; width: 30px; height: 30px; background: #ffdd55; filter: blur(20px); opacity: 0.2; animation: flyDot 8s infinite;"></div>
+    </div>
+
+    <style>
+        @keyframes flyDot {
+            0% { transform: translate(0, 0) scale(1); opacity: 0.2; }
+            100% { transform: translate(40px, -30px) scale(1.5); opacity: 0.6; }
+        }
+    </style>
+</body>
+</html>
